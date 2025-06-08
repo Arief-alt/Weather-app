@@ -74,7 +74,7 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex justify-between">
-                        <div className="gap-4 flex flex-col">
+                        <div className="pt-4 gap-4 flex flex-col">
                             <h1 className="text-6xl">
                                 22°C
                             </h1>
@@ -84,11 +84,11 @@ const Dashboard = () => {
                             </p>
                         </div>
 
-                        <div className="pt-2 gap-4 flex flex-col">
+                        <div className="flex flex-col">
                             <img
-                                src="/assets/icons/pin.png"
+                                src="/assets/icons/cloud.png"
                                 alt="search"
-                                className="size-15"
+                                className="size-25"
                             />
 
                             <h1 className="flex justify-center text-gray-400">
