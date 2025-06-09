@@ -17,7 +17,7 @@ const Dashboard = () => {
                     </p>
                 </section>
 
-                <section className="p-8 gap-2 md:gap-6 w-full flex border border-gray-100 shadow-400 rounded-xl">
+                <section className="p-8 gap-2 w-full flex border border-gray-100 shadow-400 rounded-xl">
                     <div className="w-full">
                         <img
                             src="/assets/icons/pin.png"
@@ -33,7 +33,7 @@ const Dashboard = () => {
                         />
                     </div>
 
-                    <div className="hover:scale-105 flex items-center justify-center md:justify-end">
+                    <div className="hover:scale-105 flex items-center justify-center">
                         <button
                             onClick={() => {
                                 console.log("Find city")
@@ -53,7 +53,7 @@ const Dashboard = () => {
                 </section>
 
                 <section className="grid w-full lg:grid-cols-[3fr_2fr] gap-4">
-                    <div className="hover:scale-105 p-8 gap-2 md:gap-6 w-full flex flex-col border border-gray-100 shadow-400 rounded-xl">
+                    <div className="hover:scale-105 p-8 gap-2 w-full flex flex-col border border-gray-100 shadow-400 rounded-xl">
                         <div className="flex justify-between">
                             <div className="flex items-center">
                                 <img
@@ -108,7 +108,7 @@ const Dashboard = () => {
                             Weather Details
                         </h1>
 
-                        <div className="hover:scale-105 p-4 gap-2 md:gap-6 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/humidity.png"
@@ -125,7 +125,7 @@ const Dashboard = () => {
                             </h1>
                         </div>
 
-                        <div className="hover:scale-105 p-4 gap-2 md:gap-6 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/wind.png"
@@ -142,7 +142,7 @@ const Dashboard = () => {
                             </h1>
                         </div>
 
-                        <div className="hover:scale-105 p-4 gap-2 md:gap-6 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/pressure.png"
@@ -159,7 +159,7 @@ const Dashboard = () => {
                             </h1>
                         </div>
 
-                        <div className="hover:scale-105 p-4 gap-2 md:gap-6 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/brightness.png"
@@ -178,7 +178,7 @@ const Dashboard = () => {
                     </div>
                 </section>
 
-                <section className="w-full flex flex-col gap-4 p-6 md:gap-6 border border-gray-100 shadow-400 rounded-xl">
+                <section className="w-full flex flex-col gap-4 p-6 border border-gray-100 shadow-400 rounded-xl">
                     <h1 className="text-2xl">
                         5-Day Forecast
                     </h1>
