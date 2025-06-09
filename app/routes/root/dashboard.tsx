@@ -3,7 +3,7 @@ import React from 'react'
 const Dashboard = () => {
     return (
         <main
-            className="px-6 py-12 flex flex-col h-screen lg:px-30 xl:px-60 2xl:px-80"
+            className="px-6 py-12 flex flex-col h-screen lg:px-12"
             style={{backgroundImage: "url('/assets/images/bg.webp')"}}
         >
             <div className="gap-12 flex flex-col items-center justify-center">
@@ -52,7 +52,7 @@ const Dashboard = () => {
                     </div>
                 </section>
 
-                <section className="grid w-full lg:grid-cols-2 gap-4">
+                <section className="grid w-full lg:grid-cols-[3fr_2fr] gap-4">
                     <div className="hover:scale-105 p-8 gap-2 md:gap-6 w-full flex flex-col border border-gray-100 shadow-400 rounded-xl">
                         <div className="flex justify-between">
                             <div className="flex items-center">
