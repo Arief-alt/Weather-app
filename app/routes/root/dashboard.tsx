@@ -1,6 +1,37 @@
 import React from 'react'
+import {type LoaderFunctionArgs} from "react-router";
+import type {Route} from "../../../.react-router/types/app/routes/root/+types/dashboard";
 
-const Dashboard = () => {
+export const loader = async ({params}: LoaderFunctionArgs) => {
+    const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=London&units=metric&appid=24f888e8276b4fb514454e7d92a49636`
+    );
+
+    const city = params.city;
+
+    if (!process.env.REACT_APP_WEATHER_KEY) {
+        console.error("REACT_APP_WEATHER_KEY is not defined.");
+        throw new Error("Weather API key is missing.");
+    }
+
+    try {
+        if (!response.ok) {
+            throw new Error(`Error fetching weather: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching weather in loader:", error);
+        throw error;
+    }
+};
+
+
+const Dashboard = ({loaderData}: Route.ComponentProps) => {
+    const weatherData = loaderData.data;
+
+    console.log('weather data:', weatherData)
+
     return (
         <main
             className="px-6 py-12 flex flex-col h-screen lg:px-12"
