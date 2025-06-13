@@ -1,13 +1,9 @@
-import React from 'react'
-import {type LoaderFunctionArgs} from "react-router";
+import React, { useState } from 'react'
+import {useNavigate, type LoaderFunctionArgs} from "react-router";
 import type {Route} from "../../../.react-router/types/app/routes/root/+types/dashboard";
 
 export const loader = async ({params}: LoaderFunctionArgs) => {
-    const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=London&units=metric&appid=24f888e8276b4fb514454e7d92a49636`
-    );
-
-    const city = params.city;
+    const city = params.city || 'London';
 
     if (!process.env.REACT_APP_WEATHER_KEY) {
         console.error("REACT_APP_WEATHER_KEY is not defined.");
@@ -15,22 +11,35 @@ export const loader = async ({params}: LoaderFunctionArgs) => {
     }
 
     try {
+        const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_WEATHER_KEY}`
+        );
+
         if (!response.ok) {
             throw new Error(`Error fetching weather: ${response.statusText}`);
         }
 
-        return await response.json();
+        const data = await response.json();
+        return { data };
     } catch (error) {
         console.error("Error fetching weather in loader:", error);
         throw error;
     }
 };
 
-
 const Dashboard = ({loaderData}: Route.ComponentProps) => {
-    const weatherData = loaderData.data;
+    const [searchCity, setSearchCity] = useState('');
+    const navigate = useNavigate();
+    const weatherData = loaderData?.data;
 
     console.log('weather data:', weatherData)
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchCity.trim()) {
+            navigate(`?city=${searchCity}`);
+        }
+    };
 
     return (
         <main
@@ -49,38 +58,38 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                 </section>
 
                 <section className="p-8 gap-2 w-full flex border border-gray-100 shadow-400 rounded-xl">
-                    <div className="w-full">
-                        <img
-                            src="/assets/icons/pin.png"
-                            alt="search"
-                            className="absolute pl-3 pt-3 size-8"
-                        />
-
-                        <input
-                            type="text"
-                            maxLength={50}
-                            placeholder="Enter city name..."
-                            className="w-full p-2 pl-12 rounded-lg  border border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-100 cursor-pointer"
-                        />
-                    </div>
-
-                    <div className="hover:scale-105 flex items-center justify-center">
-                        <button
-                            onClick={() => {
-                                console.log("Find city")
-                            }}
-                            type="submit"
-                            className="flex items-center gap-2 px-3 py-2 w-32 rounded-lg bg-dark-blue cursor-pointer border border-gray-600"
-                        >
+                    <form onSubmit={handleSearch} className="w-full flex gap-2">
+                        <div className="w-full">
                             <img
-                                src="/assets/icons/analyse.png"
+                                src="/assets/icons/pin.png"
                                 alt="search"
-                                className="size-5"
+                                className="absolute pl-3 pt-3 size-8"
                             />
 
-                            <h1 className="pl-2">Search</h1>
-                        </button>
-                    </div>
+                            <input
+                                type="text"
+                                value={searchCity}
+                                onChange={(e) => setSearchCity(e.target.value)}
+                                maxLength={50}
+                                placeholder="Enter city name..."
+                                className="w-full p-2 pl-12 rounded-lg border border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-100 cursor-pointer"
+                            />
+                        </div>
+
+                        <div className="hover:scale-105 flex items-center justify-center">
+                            <button
+                                type="submit"
+                                className="flex items-center gap-2 px-3 py-2 w-32 rounded-lg bg-dark-blue cursor-pointer border border-gray-600"
+                            >
+                                <img
+                                    src="/assets/icons/analyse.png"
+                                    alt="search"
+                                    className="size-5"
+                                />
+                                <h1 className="pl-2">Search</h1>
+                            </button>
+                        </div>
+                    </form>
                 </section>
 
                 <section className="grid w-full lg:grid-cols-[3fr_2fr] gap-4">
@@ -92,15 +101,19 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="search"
                                     className="size-5"
                                 />
-
                                 <h1 className="pl-5 text-xl">
-                                    New York, United States
+                                    {weatherData?.name}, {weatherData?.sys?.country}
                                 </h1>
                             </div>
 
                             <div className="flex items-center">
                                 <h1 className="text-gray-400">
-                                    Sunday, June 8, 2025
+                                    {new Date().toLocaleDateString('en-US', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}
                                 </h1>
                             </div>
                         </div>
@@ -108,29 +121,27 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                         <div className="flex justify-between">
                             <div className="pt-4 gap-4 flex flex-col">
                                 <h1 className="text-6xl">
-                                    22°C
+                                    {Math.round(weatherData?.main?.temp)}°C
                                 </h1>
-
                                 <p className="text-gray-300">
-                                    Partly Cloudy
+                                    {weatherData?.weather?.[0]?.description}
                                 </p>
                             </div>
 
                             <div className="flex flex-col">
                                 <img
-                                    src="/assets/icons/cloud.png"
-                                    alt="search"
+                                    src={`/assets/icons/${getWeatherIcon(weatherData?.weather?.[0]?.main)}.png`}
+                                    alt="weather icon"
                                     className="size-25"
                                 />
-
                                 <h1 className="flex justify-center text-gray-400">
-                                    72°F
+                                    {Math.round((weatherData?.main?.temp * 9/5) + 32)}°F
                                 </h1>
                             </div>
                         </div>
 
                         <h1 className="text-gray-400">
-                            Feels like 24°C
+                            Feels like {Math.round(weatherData?.main?.feels_like)}°C
                         </h1>
                     </div>
 
@@ -359,5 +370,15 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
             </div>
         </main>
     )
+}
+
+function getWeatherIcon(condition: string) {
+    switch(condition?.toLowerCase()) {
+        case 'clear': return 'brightness';
+        case 'clouds': return 'cloud';
+        case 'rain': return 'light-rain';
+        case 'thunderstorm': return 'thunderstorm';
+        default: return 'cloud';
+    }
 }
 export default Dashboard
