@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import {useNavigate, type LoaderFunctionArgs} from "react-router";
 import type {Route} from "../../../.react-router/types/app/routes/root/+types/dashboard";
 
-export const loader = async ({params}: LoaderFunctionArgs) => {
-    const city = params.city || 'London';
+export const loader = async ({request}: LoaderFunctionArgs) => {
+    const url = new URL(request.url);
+    const city = url.searchParams.get('city') || 'London';
 
     if (!process.env.REACT_APP_WEATHER_KEY) {
         console.error("REACT_APP_WEATHER_KEY is not defined.");
@@ -32,7 +33,11 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
     const navigate = useNavigate();
     const weatherData = loaderData?.data;
 
-    console.log('weather data:', weatherData)
+    useEffect(() => {
+        if (weatherData?.name) {
+            setSearchCity(weatherData.name);
+        }
+    }, [weatherData]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
