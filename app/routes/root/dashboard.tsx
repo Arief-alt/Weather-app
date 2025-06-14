@@ -1,6 +1,7 @@
 import React, {useEffect, useState } from 'react'
 import {useNavigate, type LoaderFunctionArgs} from "react-router";
 import type {Route} from "../../../.react-router/types/app/routes/root/+types/dashboard";
+import {usePreventZoom} from "../../../components";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
     const url = new URL(request.url);
@@ -46,10 +47,16 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
         }
     };
 
+    usePreventZoom()
+
+    console.log(weatherData);
+
     return (
         <main
-            className="px-6 py-12 flex flex-col h-screen lg:px-12"
-            style={{backgroundImage: "url('/assets/images/bg.webp')"}}
+            className="px-6 py-12 flex flex-col min-h-screen lg:px-12 bg-no-repeat bg-cover bg-center bg-fixed"
+            style={{
+                backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), url('/assets/images/bg.webp')"
+            }}
         >
             <div className="gap-12 flex flex-col items-center justify-center">
                 <section className="items-center justify-center flex flex-col gap-4">
@@ -62,7 +69,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                     </p>
                 </section>
 
-                <section className="p-8 gap-2 w-full flex border border-gray-100 shadow-400 rounded-xl">
+                <section className="p-8 gap-2 w-full flex border border-gray-100 shadow-400 rounded-xl bg-dark">
                     <form onSubmit={handleSearch} className="w-full flex gap-2">
                         <div className="w-full">
                             <img
@@ -98,7 +105,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                 </section>
 
                 <section className="grid w-full lg:grid-cols-[3fr_2fr] gap-4">
-                    <div className="hover:scale-105 p-8 gap-2 w-full flex flex-col border border-gray-100 shadow-400 rounded-xl">
+                    <div className="hover:scale-105 p-8 gap-2 w-full flex flex-col border border-gray-100 shadow-400 rounded-xl bg-dark">
                         <div className="flex justify-between">
                             <div className="flex items-center">
                                 <img
@@ -155,7 +162,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             Weather Details
                         </h1>
 
-                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl bg-dark">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/humidity.png"
@@ -168,11 +175,11 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </div>
 
                             <h1 className="text-lg">
-                                65%
+                                {weatherData?.main?.humidity}%
                             </h1>
                         </div>
 
-                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl bg-dark">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/wind.png"
@@ -189,7 +196,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </h1>
                         </div>
 
-                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl bg-dark">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/pressure.png"
@@ -206,7 +213,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </h1>
                         </div>
 
-                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl">
+                        <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl bg-dark">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
                                     src="/assets/icons/brightness.png"
@@ -225,7 +232,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                     </div>
                 </section>
 
-                <section className="w-full flex flex-col gap-4 p-6 border border-gray-100 shadow-400 rounded-xl">
+                <section className="w-full flex flex-col gap-4 p-6 border border-gray-100 shadow-400 rounded-xl bg-dark">
                     <h1 className="text-2xl">
                         5-Day Forecast
                     </h1>

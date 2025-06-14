@@ -48,6 +48,10 @@ body {
   }
 }
 
+.bg-dark {
+  @apply inset-0 bg-black/30 z-0;
+}
+
 .glassmorphism {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(2px);
