@@ -60,11 +60,11 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
         >
             <div className="gap-12 flex flex-col items-center justify-center">
                 <section className="items-center justify-center flex flex-col gap-4">
-                    <h1 className="font-bold text-4xl">
+                    <h1 className="text-white font-bold text-4xl">
                         Weather Dashboard
                     </h1>
 
-                    <p className="text-lg">
+                    <p className="text-white text-lg">
                         Get real-time weather information for any city
                     </p>
                 </section>
@@ -98,7 +98,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="search"
                                     className="size-5"
                                 />
-                                <h1 className="pl-2">Search</h1>
+                                <h1 className="text-white pl-2">Search</h1>
                             </button>
                         </div>
                     </form>
@@ -113,7 +113,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="search"
                                     className="size-5"
                                 />
-                                <h1 className="pl-5 text-xl">
+                                <h1 className="text-white pl-5 text-xl">
                                     {weatherData?.name}, {weatherData?.sys?.country}
                                 </h1>
                             </div>
@@ -132,10 +132,10 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
 
                         <div className="flex justify-between">
                             <div className="pt-4 gap-4 flex flex-col">
-                                <h1 className="text-6xl">
+                                <h1 className="text-white text-6xl">
                                     {Math.round(weatherData?.main?.temp)}°C
                                 </h1>
-                                <p className="text-gray-300">
+                                <p className="text-white text-gray-300">
                                     {weatherData?.weather?.[0]?.description}
                                 </p>
                             </div>
@@ -146,19 +146,19 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="weather icon"
                                     className="size-25"
                                 />
-                                <h1 className="flex justify-center text-gray-400">
+                                <h1 className="text-white flex justify-center text-gray-400">
                                     {Math.round((weatherData?.main?.temp * 9/5) + 32)}°F
                                 </h1>
                             </div>
                         </div>
 
-                        <h1 className="text-gray-400">
+                        <h1 className="text-white text-gray-400">
                             Feels like {Math.round(weatherData?.main?.feels_like)}°C
                         </h1>
                     </div>
 
                     <div className="w-full flex flex-col gap-4">
-                        <h1 className="text-2xl">
+                        <h1 className="text-white text-2xl">
                             Weather Details
                         </h1>
 
@@ -169,12 +169,12 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="humidity"
                                     className="size-6"
                                 />
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Humidity
                                 </h1>
                             </div>
 
-                            <h1 className="text-lg">
+                            <h1 className="text-white text-lg">
                                 {weatherData?.main?.humidity}%
                             </h1>
                         </div>
@@ -186,12 +186,12 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="wind"
                                     className="size-6"
                                 />
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Wind Speed
                                 </h1>
                             </div>
 
-                            <h1 className="text-lg">
+                            <h1 className="text-white text-lg">
                                 15 km/h
                             </h1>
                         </div>
@@ -203,12 +203,12 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="pressure"
                                     className="size-6"
                                 />
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Pressure
                                 </h1>
                             </div>
 
-                            <h1 className="text-lg">
+                            <h1 className="text-white text-lg">
                                 1013 mb
                             </h1>
                         </div>
@@ -220,12 +220,12 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     alt="visibility"
                                     className="size-6"
                                 />
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Visibility
                                 </h1>
                             </div>
 
-                            <h1 className="text-lg">
+                            <h1 className="text-white text-lg">
                                 10 km
                             </h1>
                         </div>
@@ -233,14 +233,14 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                 </section>
 
                 <section className="w-full flex flex-col gap-4 p-6 border border-gray-100 shadow-400 rounded-xl bg-dark">
-                    <h1 className="text-2xl">
+                    <h1 className="text-white text-2xl">
                         5-Day Forecast
                     </h1>
 
                     <section className="grid md:grid-cols-5 gap-4">
                         <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
                             <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Thursday
                                 </h1>
 
@@ -255,8 +255,8 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                 </p>
                             </div>
 
-                            <div className="flex justify-between items-center w-full">
-                                <h1>
+                            <div className="text-white flex justify-between items-center w-full">
+                                <h1 className="text-white">
                                     22°C
                                 </h1>
 
@@ -268,7 +268,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
 
                         <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
                             <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Friday
                                 </h1>
 
@@ -283,8 +283,8 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                 </p>
                             </div>
 
-                            <div className="flex justify-between items-center w-full">
-                                <h1>
+                            <div className="text-white flex justify-between items-center w-full">
+                                <h1 className="text-white">
                                     26°C
                                 </h1>
 
@@ -296,7 +296,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
 
                         <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
                             <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Saturday
                                 </h1>
 
@@ -311,8 +311,8 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                 </p>
                             </div>
 
-                            <div className="flex justify-between items-center w-full">
-                                <h1>
+                            <div className="text-white flex justify-between items-center w-full">
+                                <h1 className="text-white">
                                     23°C
                                 </h1>
 
@@ -324,7 +324,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
 
                         <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
                             <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Sunday
                                 </h1>
 
@@ -339,8 +339,8 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                 </p>
                             </div>
 
-                            <div className="flex justify-between items-center w-full">
-                                <h1>
+                            <div className="text-white flex justify-between items-center w-full">
+                                <h1 className="text-white">
                                     21°C
                                 </h1>
 
@@ -352,7 +352,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
 
                         <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
                             <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-lg">
+                                <h1 className="text-white text-lg">
                                     Monday
                                 </h1>
 
@@ -367,8 +367,8 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                 </p>
                             </div>
 
-                            <div className="flex justify-between items-center w-full">
-                                <h1>
+                            <div className="text-white flex justify-between items-center w-full">
+                                <h1 className="text-white">
                                     19°C
                                 </h1>
 
