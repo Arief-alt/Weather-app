@@ -45,6 +45,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 const Dashboard = ({loaderData}: Route.ComponentProps) => {
     const [searchCity, setSearchCity] = useState(loaderData?.city || '');
     const [error, setError] = useState(loaderData?.error || null);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const { currentWeather, forecast } = loaderData || {};
@@ -52,11 +53,13 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
     const dailyForecast = forecast?.list?.filter((_: any, index: any) => index % 8 === 0).slice(0, 5) || [];
 
     useEffect(() => {
-        setError(loaderData?.error || null)
-    }, [loaderData?.error])
+        setError(loaderData?.error || null);
+        setIsLoading(false);
+    }, [loaderData])
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
         if (searchCity.trim()) {
             navigate(`?city=${searchCity}`);
         }
@@ -108,14 +111,21 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                         <div className="hover:scale-105 flex items-center justify-center">
                             <button
                                 type="submit"
-                                className="flex items-center gap-2 px-3 py-2 w-32 rounded-lg bg-dark-blue cursor-pointer border border-gray-600"
+                                className="flex justify-center items-center gap-4 px-3 py-2 w-32 rounded-lg bg-dark-blue cursor-pointer border border-gray-600"
+                                disabled={isLoading}
                             >
-                                <img
-                                    src="/assets/icons/analyse.png"
-                                    alt="search"
-                                    className="size-5"
-                                />
-                                <h1 className="text-white pl-2">Search</h1>
+                                {isLoading ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                ) : (
+                                <>
+                                    <img
+                                        src="/assets/icons/analyse.png"
+                                        alt="search"
+                                        className="size-5"
+                                    />
+                                    <h1 className="text-white pl-2">Search</h1>
+                                </>
+                                )}
                             </button>
                         </div>
                     </form>
