@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react'
+import React, {useEffect, useState } from 'react';
 import {useNavigate, type LoaderFunctionArgs} from "react-router";
 import type {Route} from "../../../.react-router/types/app/routes/root/+types/dashboard";
 import {usePreventZoom} from "../../../components";
@@ -8,48 +8,65 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     const city = url.searchParams.get('city') || 'London';
 
     if (!process.env.REACT_APP_WEATHER_KEY) {
-        console.error("REACT_APP_WEATHER_KEY is not defined.");
         throw new Error("Weather API key is missing.");
     }
 
     try {
-        const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_WEATHER_KEY}`
-        );
+        const [currentResponse, forecastResponse] = await Promise.all([
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_WEATHER_KEY}`),
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${process.env.REACT_APP_WEATHER_KEY}`)
+        ])
 
-        if (!response.ok) {
-            throw new Error(`Error fetching weather: ${response.statusText}`);
+        if (!currentResponse.ok || !forecastResponse.ok) {
+            const errorData = await currentResponse.json().catch(() => null) || await forecastResponse.json().catch(() => null);
+
+            return {
+                error: errorData?.message || 'Failed to fetch weather data',
+                city
+            }
         }
 
-        const data = await response.json();
-        return { data };
+        const [currentData, forecastData] = await Promise.all([
+            currentResponse.json(),
+            forecastResponse.json()
+        ])
+
+        return {
+            currentWeather: currentData,
+            forecast: forecastData,
+            city
+        }
     } catch (error) {
-        console.error("Error fetching weather in loader:", error);
+        console.error("Error fetching weather:", error);
         throw error;
     }
-};
+}
 
 const Dashboard = ({loaderData}: Route.ComponentProps) => {
-    const [searchCity, setSearchCity] = useState('');
+    const [searchCity, setSearchCity] = useState(loaderData?.city || '');
+    const [error, setError] = useState(loaderData?.error || null);
     const navigate = useNavigate();
-    const weatherData = loaderData?.data;
+
+    const { currentWeather, forecast } = loaderData || {};
+
+    const dailyForecast = forecast?.list?.filter((_: any, index: any) => index % 8 === 0).slice(0, 5) || [];
 
     useEffect(() => {
-        if (weatherData?.name) {
-            setSearchCity(weatherData.name);
-        }
-    }, [weatherData]);
+        setError(loaderData?.error || null)
+    }, [loaderData?.error])
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchCity.trim()) {
             navigate(`?city=${searchCity}`);
         }
-    };
+    }
+
+    // console.log('Forecast:', forecast);
+    // console.log('Current Weather:', currentWeather);
+    // console.log('5-Day Forecast:', dailyForecast);
 
     usePreventZoom()
-
-    console.log(weatherData);
 
     return (
         <main
@@ -69,7 +86,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                     </p>
                 </section>
 
-                <section className="p-8 gap-2 w-full flex border border-gray-100 shadow-400 rounded-xl bg-dark">
+                <section className="p-8 gap-2 w-full flex flex-col border border-gray-100 shadow-400 rounded-xl bg-dark">
                     <form onSubmit={handleSearch} className="w-full flex gap-2">
                         <div className="w-full">
                             <img
@@ -84,7 +101,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                 onChange={(e) => setSearchCity(e.target.value)}
                                 maxLength={50}
                                 placeholder="Enter city name..."
-                                className="w-full p-2 pl-12 rounded-lg border border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-100 cursor-pointer"
+                                className="text-white w-full p-2 pl-12 rounded-lg border border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-100 cursor-pointer"
                             />
                         </div>
 
@@ -102,11 +119,17 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </button>
                         </div>
                     </form>
+
+                    {error && (
+                        <div className="flex flex-col mt-2 text-red-400 text-sm animate-fadeIn">
+                            ⚠️ {error}
+                        </div>
+                    )}
                 </section>
 
                 <section className="grid w-full lg:grid-cols-[3fr_2fr] gap-4">
                     <div className="hover:scale-105 p-8 gap-2 w-full flex flex-col border border-gray-100 shadow-400 rounded-xl bg-dark">
-                        <div className="flex justify-between">
+                        <div className="lg:pb-10 flex justify-between">
                             <div className="flex items-center">
                                 <img
                                     src="/assets/icons/pin.png"
@@ -114,7 +137,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                                     className="size-5"
                                 />
                                 <h1 className="text-white pl-5 text-xl">
-                                    {weatherData?.name}, {weatherData?.sys?.country}
+                                    {currentWeather?.name}, {currentWeather?.sys?.country}
                                 </h1>
                             </div>
 
@@ -133,27 +156,27 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                         <div className="flex justify-between">
                             <div className="pt-4 gap-4 flex flex-col">
                                 <h1 className="text-white text-6xl">
-                                    {Math.round(weatherData?.main?.temp)}°C
+                                    {Math.round(currentWeather?.main?.temp)}°C
                                 </h1>
-                                <p className="text-white text-gray-300">
-                                    {weatherData?.weather?.[0]?.description}
+                                <p className="text-gray-300">
+                                    {currentWeather?.weather?.[0]?.description}
                                 </p>
                             </div>
 
                             <div className="flex flex-col">
                                 <img
-                                    src={`/assets/icons/${getWeatherIcon(weatherData?.weather?.[0]?.main)}.png`}
+                                    src={`/assets/icons/${getWeatherIcon(currentWeather?.weather?.[0]?.main)}.png`}
                                     alt="weather icon"
                                     className="size-25"
                                 />
-                                <h1 className="text-white flex justify-center text-gray-400">
-                                    {Math.round((weatherData?.main?.temp * 9/5) + 32)}°F
+                                <h1 className="flex justify-center text-gray-400">
+                                    {Math.round((currentWeather?.main?.temp * 9/5) + 32)}°F
                                 </h1>
                             </div>
                         </div>
 
-                        <h1 className="text-white text-gray-400">
-                            Feels like {Math.round(weatherData?.main?.feels_like)}°C
+                        <h1 className="text-gray-400">
+                            Feels like {Math.round(currentWeather?.main?.feels_like)}°C
                         </h1>
                     </div>
 
@@ -175,7 +198,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </div>
 
                             <h1 className="text-white text-lg">
-                                {weatherData?.main?.humidity}%
+                                {currentWeather?.main?.humidity}%
                             </h1>
                         </div>
 
@@ -192,7 +215,7 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </div>
 
                             <h1 className="text-white text-lg">
-                                15 km/h
+                                {Math.round(currentWeather?.wind?.speed * 3.6)} km/h
                             </h1>
                         </div>
 
@@ -209,14 +232,14 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </div>
 
                             <h1 className="text-white text-lg">
-                                1013 mb
+                                {currentWeather?.main?.pressure} mb
                             </h1>
                         </div>
 
                         <div className="hover:scale-105 p-4 gap-2 justify-between items-center w-full flex border border-gray-100 shadow-400 rounded-xl bg-dark">
                             <div className="gap-6 items-center justify-center flex">
                                 <img
-                                    src="/assets/icons/brightness.png"
+                                    src="/assets/icons/sunny.png"
                                     alt="visibility"
                                     className="size-6"
                                 />
@@ -226,157 +249,53 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
                             </div>
 
                             <h1 className="text-white text-lg">
-                                10 km
+                                {(currentWeather?.visibility / 1000).toFixed(1)} km
                             </h1>
                         </div>
                     </div>
                 </section>
 
                 <section className="w-full flex flex-col gap-4 p-6 border border-gray-100 shadow-400 rounded-xl bg-dark">
-                    <h1 className="text-white text-2xl">
-                        5-Day Forecast
-                    </h1>
+                    <h1 className="text-white text-2xl">5-Day Forecast</h1>
 
                     <section className="grid md:grid-cols-5 gap-4">
-                        <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
-                            <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-white text-lg">
-                                    Thursday
-                                </h1>
+                        {dailyForecast.map((day: any) => {
+                            const date = new Date(day.dt * 1000)
+                            const weekday = date.toLocaleDateString('en-US', { weekday: 'long' })
+                            const weatherCondition = day.weather[0].main
+                            const tempC = Math.round(day.main.temp)
+                            const tempF = Math.round((day.main.temp * 9/5) + 32)
 
-                                <img
-                                    src="/assets/icons/cloud.png"
-                                    alt="cloud"
-                                    className="size-8"
-                                />
+                            return (
+                                <div key={day.dt} className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
+                                    <div className="gap-2 flex flex-col justify-center items-center">
+                                        <h1 className="text-white text-lg">
+                                            {weekday}
+                                        </h1>
 
-                                <p className="text-gray-400">
-                                    Partly Cloudy
-                                </p>
-                            </div>
+                                        <img
+                                            src={`/assets/icons/${getWeatherIcon(weatherCondition)}.png`}
+                                            alt={weatherCondition}
+                                            className="size-8"
+                                        />
 
-                            <div className="text-white flex justify-between items-center w-full">
-                                <h1 className="text-white">
-                                    22°C
-                                </h1>
+                                        <p className="text-gray-400">
+                                            {day.weather[0].description}
+                                        </p>
+                                    </div>
 
-                                <p className="text-gray-400">
-                                    71°F
-                                </p>
-                            </div>
-                        </div>
+                                    <div className="text-white flex justify-between items-center w-full">
+                                        <h1 className="text-white">
+                                            {tempC}°C
+                                        </h1>
 
-                        <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
-                            <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-white text-lg">
-                                    Friday
-                                </h1>
-
-                                <img
-                                    src="/assets/icons/brightness.png"
-                                    alt="brightness"
-                                    className="size-8"
-                                />
-
-                                <p className="text-gray-400">
-                                    Sunny
-                                </p>
-                            </div>
-
-                            <div className="text-white flex justify-between items-center w-full">
-                                <h1 className="text-white">
-                                    26°C
-                                </h1>
-
-                                <p className="text-gray-400">
-                                    78°F
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
-                            <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-white text-lg">
-                                    Saturday
-                                </h1>
-
-                                <img
-                                    src="/assets/icons/cloud.png"
-                                    alt="cloud"
-                                    className="size-8"
-                                />
-
-                                <p className="text-gray-400">
-                                    Cloudy
-                                </p>
-                            </div>
-
-                            <div className="text-white flex justify-between items-center w-full">
-                                <h1 className="text-white">
-                                    23°C
-                                </h1>
-
-                                <p className="text-gray-400">
-                                    73°F
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
-                            <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-white text-lg">
-                                    Sunday
-                                </h1>
-
-                                <img
-                                    src="/assets/icons/light-rain.png"
-                                    alt="light-rain"
-                                    className="size-8"
-                                />
-
-                                <p className="text-gray-400">
-                                    Light Rain
-                                </p>
-                            </div>
-
-                            <div className="text-white flex justify-between items-center w-full">
-                                <h1 className="text-white">
-                                    21°C
-                                </h1>
-
-                                <p className="text-gray-400">
-                                    69°F
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="hover:scale-105 p-4 gap-2 w-full border border-gray-100 shadow-400 rounded-xl flex flex-col">
-                            <div className="gap-2 flex flex-col justify-center items-center">
-                                <h1 className="text-white text-lg">
-                                    Monday
-                                </h1>
-
-                                <img
-                                    src="/assets/icons/thunderstorm.png"
-                                    alt="thunderstorm"
-                                    className="size-8"
-                                />
-
-                                <p className="text-gray-400">
-                                    Thunderstorm
-                                </p>
-                            </div>
-
-                            <div className="text-white flex justify-between items-center w-full">
-                                <h1 className="text-white">
-                                    19°C
-                                </h1>
-
-                                <p className="text-gray-400">
-                                    66°F
-                                </p>
-                            </div>
-                        </div>
+                                        <p className="text-gray-400">
+                                            {tempF}°F
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </section>
                 </section>
             </div>
@@ -384,13 +303,54 @@ const Dashboard = ({loaderData}: Route.ComponentProps) => {
     )
 }
 
-function getWeatherIcon(condition: string) {
-    switch(condition?.toLowerCase()) {
-        case 'clear': return 'brightness';
-        case 'clouds': return 'cloud';
-        case 'rain': return 'light-rain';
-        case 'thunderstorm': return 'thunderstorm';
-        default: return 'cloud';
+function getWeatherIcon(condition: string, isNight = false) {
+    switch (condition?.toLowerCase()) {
+        // Thunder
+        case 'thunderstorm':
+            return 'thunderstorm';
+
+        // Rain
+        case 'drizzle':
+        case 'light rain':
+            return 'light-rain';
+        case 'rain':
+        case 'heavy rain':
+            return 'heavy-rain';
+
+        // Snow
+        case 'snow':
+        case 'sleet':
+        case 'freezing rain':
+            return 'snow';
+
+        // Atmosphere
+        case 'mist':
+        case 'smoke':
+        case 'haze':
+        case 'fog':
+        case 'sand':
+        case 'dust':
+            return 'fog';
+
+        // Clear
+        case 'clear':
+            return isNight ? 'clear-night' : 'sunny';
+
+        // Clouds
+        case 'few clouds':
+            return isNight ? 'partly-cloudy-night' : 'partly-cloudy';
+        case 'scattered clouds':
+            return 'partly-cloudy';
+        case 'broken clouds':
+        case 'overcast clouds':
+            return 'cloudy';
+
+        // Extreme
+        case 'tornado':
+            return 'tornado';
+        default:
+            return 'cloud';
     }
 }
-export default Dashboard
+
+export default Dashboard;

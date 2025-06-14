@@ -1,4 +1,4 @@
-import {Outlet} from 'react-router'
+import {Outlet} from 'react-router';
 
 const Layout = () => {
     return (
@@ -7,4 +7,4 @@ const Layout = () => {
         </div>
     )
 }
-export default Layout
+export default Layout;
